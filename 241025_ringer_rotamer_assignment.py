@@ -28,6 +28,37 @@ def process_chi_data(chi_data, chi_bins):
 
     return final_results
 
+# Function to plot data
+def plot_data(final_sorted_data):
+    sns.set(style='whitegrid', palette='muted') 
+
+    # Get unique AA_CHI values
+    unique_aa_chi = final_sorted_data['AA_CHI'].unique()
+
+    # Loop through each unique AA_CHI
+    for aa_chi in unique_aa_chi:
+        # Filter for the specific amino acid and chi angle
+        specific_aa_chi = final_sorted_data[final_sorted_data['AA_CHI'] == aa_chi]
+
+        # Extract amino acid and chi angle, and replace 'CHI' with Greek letter 'χ'
+        amino_acid, chi_angle = aa_chi.split('_')
+        chi_angle = chi_angle.replace('CHI', 'χ')
+        chi_angle_label = f"{amino_acid} {chi_angle}(°)" 
+
+        # Create the plot
+        plt.figure(figsize=(5, 3)) 
+        sns.scatterplot(data=specific_aa_chi, x='angle', y='E', color='dodgerblue', s=100, edgecolor='w', alpha=0.8)
+        plt.title(f'Knowledge-based ΔE({amino_acid} {chi_angle})', fontsize=15, fontweight='bold', color='gray')  # Set title color to gray
+        plt.xlabel(chi_angle_label, fontsize=14)
+        plt.ylabel('ΔE(kcal/mol)', fontsize=14)
+        plt.xlim(0, 360)
+        plt.xticks([0, 120, 240, 360], fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.savefig(f'knowledge_based_energy{amino_acid}_{chi_angle}.png')
+
+
 def main():
     # Use glob to find all *_B_factors.csv files in the specified directory
     b_factor_files = [os.path.join(rotamer,item) for item in os.listdir(rotamer)]
@@ -114,40 +145,9 @@ def main():
 
     # Concatenate all processed DataFrames into one final DataFrame
     final_sorted_data = pd.concat(process_list, ignore_index=True)
-    print(final_sorted_data)
 
     # Plotting
     plot_data(final_sorted_data)
-
-# Function to plot data
-def plot_data(final_sorted_data):
-    sns.set(style='whitegrid', palette='muted') 
-
-    # Get unique AA_CHI values
-    unique_aa_chi = final_sorted_data['AA_CHI'].unique()
-
-    # Loop through each unique AA_CHI
-    for aa_chi in unique_aa_chi:
-        # Filter for the specific amino acid and chi angle
-        specific_aa_chi = final_sorted_data[final_sorted_data['AA_CHI'] == aa_chi]
-
-        # Extract amino acid and chi angle, and replace 'CHI' with Greek letter 'χ'
-        amino_acid, chi_angle = aa_chi.split('_')
-        chi_angle = chi_angle.replace('CHI', 'χ')
-        chi_angle_label = f"{amino_acid} {chi_angle}(°)" 
-
-        # Create the plot
-        plt.figure(figsize=(5, 3)) 
-        sns.scatterplot(data=specific_aa_chi, x='angle', y='E', color='dodgerblue', s=100, edgecolor='w', alpha=0.8)
-        plt.title(f'Knowledge-based ΔE({amino_acid} {chi_angle})', fontsize=15, fontweight='bold', color='gray')  # Set title color to gray
-        plt.xlabel(chi_angle_label, fontsize=14)
-        plt.ylabel('ΔE(kcal/mol)', fontsize=14)
-        plt.xlim(0, 360)
-        plt.xticks([0, 120, 240, 360], fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.tight_layout()
-        plt.show()
 
 # Run the main function
 if __name__ == '__main__':
