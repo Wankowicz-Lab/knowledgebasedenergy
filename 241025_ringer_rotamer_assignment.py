@@ -5,8 +5,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Define the directories containing the files
-rotamer = '/Users/joshua/Desktop/Wankowicz Lab/rotamer_output'
-folder_path = '/Users/joshua/Desktop/Wankowicz Lab/backbone_independent_energy'
+rotamer = '/dors/wankowicz_lab/all_pdb/1_10000/output_rotamer/'
+folder_path = '/dors/wankowicz_lab/shared/backbone_independent_energy'
 
 # Function to process chi data
 def process_chi_data(chi_data, chi_bins): 
