@@ -30,7 +30,6 @@ def process_chi_data(chi_data, chi_bins):
 
 # Function to generate scatter plots for each unique AA_CHI combination
 def plot_data(final_sorted_data):
-    
     sns.set(style='whitegrid', palette='muted')
     
     # Define colors for qFit and non-qFit data points
@@ -179,57 +178,57 @@ def main():
         concatenated_df = pd.DataFrame()  # Empty DataFrame if no matching residues
 
     # List all CSV files in the energy bin folder
-        csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
 
-        # Initialize an empty list to collect the DataFrames
-        dfs = []
+    # Initialize an empty list to collect the DataFrames
+    dfs = []
 
-        # Loop through all CSV files and append the processed DataFrames to the list
-        for file_name in csv_files:
-            df = pd.read_csv(os.path.join(folder_path, file_name))
-            df["AA_CHI"] = file_name.split('.')[0]  # Add the new column for AA_CHI & labeling each row by file name
-            dfs.append(df)
+    # Loop through all CSV files and append the processed DataFrames to the list
+    for file_name in csv_files:
+        df = pd.read_csv(os.path.join(folder_path, file_name))
+        df["AA_CHI"] = file_name.split('.')[0]  # Add the new column for AA_CHI & labeling each row by file name
+        dfs.append(df)
 
-        # Concatenate all DataFrames in the list into one DataFrame
-        energy_bin = pd.concat(dfs, ignore_index=True)
+    # Concatenate all DataFrames in the list into one DataFrame
+    energy_bin = pd.concat(dfs, ignore_index=True)
 
-        # Create an empty list to store processed data
-        process_list = []
+    # Create an empty list to store processed data
+    process_list = []
 
-        # Iterate through each unique amino acid and chi angle, and process data accordingly
-        for amino_acid in concatenated_df['residue_type'].unique():
-            # Filter the DataFrame by the current amino acid
-            temp_df = cconcatenated_df[concatenated_df['residue_type'] == amino_acid]
-            
-            for chi_angle in temp_df['chi_angle'].unique():
-                # Ensure chi_angle is a string and contains 'chi'
-                if isinstance(chi_angle, str) and 'chi' in chi_angle:
-                    # Capitalize chi_angle if valid
-                    chi_angle_capital = chi_angle.upper()
-                    
-                    # Create the energy_bins key
-                    energy_bins = f"{amino_acid}_{chi_angle_capital}"
-                    
-                    # Filter the energy_bin DataFrame by the energy_bins key
-                    temp_energy = energy_bin[energy_bin['AA_CHI'] == energy_bins]
-                    
-                    # Further filter temp_df by the current chi_angle
-                    temp_df2 = temp_df[temp_df['chi_angle'] == chi_angle]
-                    
-                    # Process the chi data and append to process_list
-                    process = process_chi_data(temp_df2, temp_energy)
+    # Iterate through each unique amino acid and chi angle, and process data accordingly
+    for amino_acid in concatenated_df['residue_type'].unique():
+        # Filter the DataFrame by the current amino acid
+        temp_df = concatenated_df[concatenated_df['residue_type'] == amino_acid]
+        
+        for chi_angle in temp_df['chi_angle'].unique():
+            # Ensure chi_angle is a string and contains 'chi'
+            if isinstance(chi_angle, str) and 'chi' in chi_angle:
+                # Capitalize chi_angle if valid
+                chi_angle_capital = chi_angle.upper()
+                
+                # Create the energy_bins key
+                energy_bins = f"{amino_acid}_{chi_angle_capital}"
+                
+                # Filter the energy_bin DataFrame by the energy_bins key
+                temp_energy = energy_bin[energy_bin['AA_CHI'] == energy_bins]
+                
+                # Further filter temp_df by the current chi_angle
+                temp_df2 = temp_df[temp_df['chi_angle'] == chi_angle]
+                
+                # Process the chi data and append to process_list
+                process = process_chi_data(temp_df2, temp_energy)
 
-                    # Add the AA_CHI column using the energy_bins key
-                    process["AA_CHI"] = energy_bins
-                    
-                    process_list.append(process)
+                # Add the AA_CHI column using the energy_bins key
+                process["AA_CHI"] = energy_bins
+                
+                process_list.append(process)
 
-        # Concatenate all processed DataFrames into one final DataFrame
-        final_sorted_data = pd.concat(process_list, ignore_index=True)
+    # Concatenate all processed DataFrames into one final DataFrame
+    final_sorted_data = pd.concat(process_list, ignore_index=True)
 
-        # Plotting
-        plot_data(final_sorted_data)
+    # Plotting
+    plot_data(final_sorted_data)
 
 # Run the main function
 if __name__ == '__main__':
-    main()    
+    main()
